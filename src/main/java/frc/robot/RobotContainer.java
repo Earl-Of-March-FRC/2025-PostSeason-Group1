@@ -5,6 +5,12 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.VisionDriveToTagCMD;
+import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
+
+import org.photonvision.PhotonCamera;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -27,9 +33,20 @@ public class RobotContainer {
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
+  private final VisionSubsystem visSub;
+  private final DrivetrainSubsystem driveSub;
+  private final PhotonCamera camera1;
+  private final CommandXboxController driverController = new CommandXboxController(
+      OperatorConstants.kDriverControllerPort);
+
   public RobotContainer() {
     // Configure the trigger bindings
+    camera1 = new PhotonCamera("camera1");
+    visSub = new VisionSubsystem(camera1);
+    driveSub = new DrivetrainSubsystem();
+
     configureBindings();
+
   }
 
   /**
@@ -47,6 +64,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    driverController.a().whileTrue(new VisionDriveToTagCMD(driveSub, visSub));
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is
