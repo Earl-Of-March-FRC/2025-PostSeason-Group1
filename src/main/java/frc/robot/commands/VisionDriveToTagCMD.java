@@ -7,9 +7,10 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
+
 import java.util.Optional;
 
-public class VisionDriveToTagCMD extends Command {
+public class VisionDriveToTagCmd extends Command {
   private final DrivetrainSubsystem driveSubsystem;
   private final VisionSubsystem visionSubsystem;
 
@@ -17,7 +18,7 @@ public class VisionDriveToTagCMD extends Command {
   private final double forwardSpeedMetersPerSecond = 0.4;
   private final PIDController turnController;
 
-  public VisionDriveToTagCMD(DrivetrainSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
+  public VisionDriveToTagCmd(DrivetrainSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
     this.driveSubsystem = driveSubsystem;
     this.visionSubsystem = visionSubsystem;
     addRequirements(driveSubsystem, visionSubsystem);
