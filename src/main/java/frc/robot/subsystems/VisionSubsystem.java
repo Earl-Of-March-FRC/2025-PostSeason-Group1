@@ -32,6 +32,7 @@ public class VisionSubsystem extends SubsystemBase {
    */
   public Optional<Pose2d> getEstimatedPose() {
     PhotonPipelineResult result = getLatestResult();
+
     if (result.hasTargets()) {
       PhotonTrackedTarget target = result.getBestTarget();
       Transform3d transform = target.getBestCameraToTarget();
