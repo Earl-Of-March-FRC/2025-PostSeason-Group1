@@ -6,7 +6,7 @@ import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Optional;
 
@@ -15,7 +15,7 @@ public class VisionDriveToTagCmd extends Command {
   private final VisionSubsystem visionSubsystem;
 
   private final double targetDistanceMeters = 1.0; // Stop 1 meter away
-  private final double forwardSpeedMetersPerSecond = 0.4;
+  private final double velocityMetersPerSecond = 0.4;
   private final PIDController turnController;
 
   public VisionDriveToTagCmd(DrivetrainSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
@@ -24,31 +24,40 @@ public class VisionDriveToTagCmd extends Command {
     addRequirements(driveSubsystem, visionSubsystem);
 
     turnController = new PIDController(1.0, 0.0, 0.0);
-    turnController.enableContinuousInput(-Math.PI, Math.PI); // For wrap-around at ±π
+    turnController.enableContinuousInput(-Math.PI, Math.PI); // For wrap-around at +- π
+
+    SmartDashboard.putBoolean("At April Tag Distance", false);
   }
 
   @Override
   public void execute() {
     Optional<Pose2d> targetPoseOptional = visionSubsystem.getEstimatedPose();
+    boolean atTargetDistance = false;
 
     if (targetPoseOptional.isPresent()) {
       Pose2d targetPose = targetPoseOptional.get();
-
       Translation2d tagTranslation = targetPose.getTranslation();
       double distanceToTag = tagTranslation.getNorm();
+      atTargetDistance = (distanceToTag <= targetDistanceMeters);
 
-      double angleToTagRad = Math.atan2(tagTranslation.getY(), tagTranslation.getX()); // radians
-      double turnSpeed = turnController.calculate(angleToTagRad, 0.0); // Target is straight ahead (0 rad)
+      if (!atTargetDistance) {
+        double angleToTagRad = Math.atan2(tagTranslation.getY(), tagTranslation.getX());
+        double turnSpeed = turnController.calculate(angleToTagRad, 0.0);
 
-      if (distanceToTag > targetDistanceMeters) {
-        driveSubsystem.drive(forwardSpeedMetersPerSecond, 0.0, turnSpeed);
+        double directionX = tagTranslation.getX() / distanceToTag;
+        double directionY = tagTranslation.getY() / distanceToTag;
+        driveSubsystem.driveVelocity(
+            velocityMetersPerSecond * directionX,
+            velocityMetersPerSecond * directionY,
+            turnSpeed);
       } else {
-        driveSubsystem.drive(0.0, 0.0, 0.0);
+        driveSubsystem.driveVelocity(0.0, 0.0, 0.0);
       }
-
     } else {
-      driveSubsystem.drive(0.0, 0.0, 0.0);
+      driveSubsystem.driveVelocity(0.0, 0.0, 0.0);
     }
+
+    SmartDashboard.putBoolean("At Target Distance", atTargetDistance);
   }
 
   @Override
@@ -60,6 +69,8 @@ public class VisionDriveToTagCmd extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    driveSubsystem.drive(0.0, 0.0, 0.0);
+    SmartDashboard.putBoolean("At Target Distance",
+        isFinished() && !interrupted);
+    driveSubsystem.driveVelocity(0.0, 0.0, 0.0);
   }
 }

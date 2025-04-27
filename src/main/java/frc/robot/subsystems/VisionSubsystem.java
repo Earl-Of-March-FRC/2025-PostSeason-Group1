@@ -41,14 +41,14 @@ public class VisionSubsystem extends SubsystemBase {
       PhotonTrackedTarget target = result.getBestTarget();
       Transform3d cameraToTarget = target.getBestCameraToTarget();
 
-      // Use known pose of AprilTag on the field
+      // Use known pose of AprilTag on the field (tag-to-field)
       Optional<Pose3d> tagPose = Constants.FieldConstants.kfieldLayout.getTagPose(target.getFiducialId());
 
       if (tagPose.isEmpty()) {
         return Optional.empty(); // No tag pose found for ID
       }
 
-      Pose3d cameraPose = tagPose.get().transformBy(cameraToTarget.inverse());
+      Pose3d cameraPose = tagPose.get().transformBy(cameraToTarget.inverse()); // (camera-to-field)
 
       Pose2d estimatedPose2d = cameraPose.toPose2d();
 
@@ -72,6 +72,5 @@ public class VisionSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // You can use this for logging or updating pose periodically
   }
 }

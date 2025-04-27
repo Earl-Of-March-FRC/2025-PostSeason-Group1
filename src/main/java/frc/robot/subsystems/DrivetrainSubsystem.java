@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DrivetrainSubsystem extends SubsystemBase {
@@ -16,7 +17,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void drive(double xSpeedMetersPerSecond, double ySpeedMetersPerSecond, double rotRad) {
-
+  public void driveVelocity(double xVelocity, double yVelocity, double angularVelocity) {
+    ChassisSpeeds speeds = new ChassisSpeeds(xVelocity, yVelocity, angularVelocity);
+    // driveChassisSpeeds(speeds);
   }
 }

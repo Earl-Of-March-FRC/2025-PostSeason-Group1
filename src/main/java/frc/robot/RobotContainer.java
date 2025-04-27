@@ -5,7 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.VisionDriveToTagCMD;
+import frc.robot.commands.VisionDriveToTagCmd;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -64,7 +64,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    driverController.a().whileTrue(new VisionDriveToTagCMD(driveSub, visSub));
+    driverController.a().whileTrue(new VisionDriveToTagCmd(driveSub, visSub));
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is
