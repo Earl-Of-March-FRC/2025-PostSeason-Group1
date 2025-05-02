@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems.Drivetrain;
 
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -13,20 +17,20 @@ import frc.robot.Constants.DrivetrainConstants;
 public class DrivetrainSubsystem extends SubsystemBase {
 
   //0 front left, 1 front right, 2 back left, 3 back right
-  private MAXSwerveModule[] swerveModules = new MAXSwerveModule[4];
+  private final Module[] swerveModules = new Module[4];
   private final SwerveDriveKinematics kinematics = DrivetrainConstants.kDriveKinematics;
+  private final DrivetrainIOInputsAutoLogged inputs = new DrivetrainIOInputsAutoLogged();
 
   /** Creates a new DrivetrainSubsystem. */
-  public DrivetrainSubsystem() { 
-    swerveModules[0] = new MAXSwerveModule(DrivetrainConstants.kFrontLeftDrivingMotorId, DrivetrainConstants.kFrontLeftTurningMotorId, DrivetrainConstants.kFrontLeftChassisAngularOffset);
-    swerveModules[1] = new MAXSwerveModule(DrivetrainConstants.kFrontRightDrivingMotorId, DrivetrainConstants.kFrontRightTurningMotorId, DrivetrainConstants.kFrontRightChassisAngularOffset);
-    swerveModules[2] = new MAXSwerveModule(DrivetrainConstants.kBackLeftDrivingMotorId, DrivetrainConstants.kBackLeftTurningMotorId, DrivetrainConstants.kBackLeftChassisAngularOffset);
-    swerveModules[3] = new MAXSwerveModule(DrivetrainConstants.kBackRightDrivingMotorId, DrivetrainConstants.kBackRightTurningMotorId, DrivetrainConstants.kBackRightChassisAngularOffset);
+  public DrivetrainSubsystem(ModuleIO[] moduleIOs) { 
+    for (int i = 0; i < swerveModules.length; i++) {
+      swerveModules[i] = new Module(moduleIOs[i], i);
+    }
   }
 
   public void setModuleStates(SwerveModuleState[] states) {
     for (int i = 0; i < swerveModules.length; i++) {
-      swerveModules[i].setDesiredState(states[i]);
+      swerveModules[i].runSetpoint(states[i]);
     }
   }
 
@@ -65,5 +69,44 @@ public class DrivetrainSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    for (int i = 0; i < swerveModules.length; i++) {
+      swerveModules[i].periodic();
+    }
+
+    inputs.update(swerveModules);
+    Logger.processInputs("Drive/Inputs", inputs);
   }
-}
+
+  @AutoLog
+  public static class DrivetrainIOInputs {
+    public SwerveModuleState[] states = new SwerveModuleState[] {
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+      new SwerveModuleState()
+    };
+    public SwerveModuleState[] desiredStates = new SwerveModuleState[] {
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+      new SwerveModuleState()
+    };
+
+    public void updateStates(Module[] swerveModules) {
+      for (int i = 0; i < states.length; i++) {
+        states[i] = swerveModules[i].getState();
+      }
+    }
+
+    public void updateDesiredStates(Module[] swerveModules) {
+      for (int i = 0; i < desiredStates.length; i++) {
+        desiredStates[i] = swerveModules[i].getDesiredState();
+      }
+    }
+
+    public void update(Module[] swerveModules) {
+      updateDesiredStates(swerveModules);
+      updateStates(swerveModules);  
+    }
+  }
+};

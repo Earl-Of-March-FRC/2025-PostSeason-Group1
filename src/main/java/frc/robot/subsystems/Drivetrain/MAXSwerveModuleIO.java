@@ -19,7 +19,7 @@ import com.revrobotics.RelativeEncoder;
 
 import frc.robot.Configs;
 
-public class MAXSwerveModule implements ModuleIO{
+public class MAXSwerveModuleIO implements ModuleIO{
   private final SparkMax m_drivingSpark;
   private final SparkMax m_turningSpark;
 
@@ -38,7 +38,7 @@ public class MAXSwerveModule implements ModuleIO{
    * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
    * Encoder.
    */
-  public MAXSwerveModule(int drivingCANId, int turningCANId, double chassisAngularOffset) {
+  public MAXSwerveModuleIO(int drivingCANId, int turningCANId, double chassisAngularOffset) {
     m_drivingSpark = new SparkMax(drivingCANId, MotorType.kBrushless);
     m_turningSpark = new SparkMax(turningCANId, MotorType.kBrushless);
 
@@ -73,6 +73,10 @@ public class MAXSwerveModule implements ModuleIO{
         new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
   }
 
+  public SwerveModuleState getDesiredState() {
+    return m_desiredState;
+  }
+
   /**
    * Returns the current position of the module.
    *
@@ -91,7 +95,8 @@ public class MAXSwerveModule implements ModuleIO{
    *
    * @param desiredState Desired state with speed and angle.
    */
-  public void setDesiredState(SwerveModuleState desiredState) {
+  @Override
+  public void setState(SwerveModuleState desiredState) {
     // Apply chassis angular offset to the desired state.
     SwerveModuleState correctedDesiredState = new SwerveModuleState();
     correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
@@ -108,37 +113,15 @@ public class MAXSwerveModule implements ModuleIO{
   }
 
   /** Zeroes all the SwerveModule encoders. */
+  @Override
   public void resetEncoders() {
     m_drivingEncoder.setPosition(0);
   }
 
-  /** Updates the set of loggable inputs. */
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    //TODO implement this
-  }
-
-  /** Run the drive motor at the specified open loop value. */
-  @Override
-  public void setDriveOpenLoop(double output) {
-    m_drivingSpark.setVoltage(output);
-  }
-
-  /** Run the turn motor at the specified open loop value. */
-  @Override
-  public void setTurnOpenLoop(double output) {
-    m_turningSpark.setVoltage(output);
-  }
-
-  /** Run the drive motor at the specified velocity. */
-  @Override
-  public void setDriveVelocity(double velocityRadPerSec) {
-    m_drivingClosedLoopController.setReference(velocityRadPerSec, ControlType.kVelocity);
-  }
-
-  /** Run the turn motor to the specified rotation. */
-  @Override
-  public void setTurnPosition(Rotation2d rotation) {
-    m_turningClosedLoopController.setReference(rotation.getRadians(), ControlType.kPosition);
+    inputs.position = getPosition();
+    inputs.state = getState();
+    inputs.desiredState = getDesiredState();
   }
 }

@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.Drivetrain.MAXSwerveModuleIO;
+import frc.robot.subsystems.Drivetrain.ModuleIO;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -60,6 +62,13 @@ public final class Constants {
         new Translation2d(kWheelBaseMeters / 2, -kTrackWidthMeters / 2),
         new Translation2d(-kWheelBaseMeters / 2, kTrackWidthMeters / 2),
         new Translation2d(-kWheelBaseMeters / 2, -kTrackWidthMeters / 2));
+
+    public static final ModuleIO[] kModuleIOsReal = {
+        new MAXSwerveModuleIO(kFrontLeftDrivingMotorId, kFrontLeftTurningMotorId, kFrontLeftChassisAngularOffset),
+        new MAXSwerveModuleIO(kFrontRightDrivingMotorId, kFrontRightTurningMotorId, kFrontRightChassisAngularOffset),
+        new MAXSwerveModuleIO(kBackLeftDrivingMotorId, kBackLeftTurningMotorId, kBackLeftChassisAngularOffset),
+        new MAXSwerveModuleIO(kBackRightDrivingMotorId, kBackRightTurningMotorId, kBackRightChassisAngularOffset)
+    };
 
   }
   public static final class ModuleConstants {
