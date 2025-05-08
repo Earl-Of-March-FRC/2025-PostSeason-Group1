@@ -40,7 +40,7 @@ public class Module {
     Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
   }
 
-  /** Runs the module with the specified setpoint state. Mutates the state to optimize it. */
+  /** Runs the module with the specified setpoint state*/
   public void runSetpoint(SwerveModuleState state) {
     io.setState(state);
   }
@@ -68,6 +68,12 @@ public class Module {
   /** Returns the desired module state (turn angle and drive velocity). */
   public SwerveModuleState getDesiredState() {
     return inputs.desiredState;
+  }
+
+  /** Returns the desired module state after being optimized
+   *  (this turn angle and drive velocity are applied directly to the motors). */
+  public SwerveModuleState getProcessedDesiredState() {
+    return inputs.processedDesiredState;
   }
 
   public void resetEncoders() {

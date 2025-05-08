@@ -33,7 +33,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("Project Name", "Post Season Group 1"); // Set a metadata value
 
     if (isReal()) {
-        // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+        Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
     } else {
         // setUseTiming(false); // Run as fast as possible

@@ -91,22 +91,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
       new SwerveModuleState(),
       new SwerveModuleState()
     };
+    public SwerveModuleState[] processedDesiredStates = new SwerveModuleState[] {
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+      new SwerveModuleState()
+    };
 
-    public void updateStates(Module[] swerveModules) {
-      for (int i = 0; i < states.length; i++) {
-        states[i] = swerveModules[i].getState();
-      }
-    }
-
-    public void updateDesiredStates(Module[] swerveModules) {
-      for (int i = 0; i < desiredStates.length; i++) {
-        desiredStates[i] = swerveModules[i].getDesiredState();
-      }
-    }
 
     public void update(Module[] swerveModules) {
-      updateDesiredStates(swerveModules);
-      updateStates(swerveModules);  
+      for (int i = 0; i < swerveModules.length; i++) {
+        states[i] = swerveModules[i].getState();
+        desiredStates[i] = swerveModules[i].getDesiredState();
+        processedDesiredStates[i] = swerveModules[i].getProcessedDesiredState();
+      }
     }
   }
 };

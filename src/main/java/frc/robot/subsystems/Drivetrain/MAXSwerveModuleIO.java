@@ -31,6 +31,7 @@ public class MAXSwerveModuleIO implements ModuleIO{
 
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
+  private SwerveModuleState m_processedDesiredState = new SwerveModuleState(0.0, new Rotation2d());
 
   /**
    * Constructs a MAXSwerveModule and configures the driving and turning motor,
@@ -77,6 +78,10 @@ public class MAXSwerveModuleIO implements ModuleIO{
     return m_desiredState;
   }
 
+  public SwerveModuleState getProcessedDesiredState() {
+    return m_processedDesiredState;
+  }
+
   /**
    * Returns the current position of the module.
    *
@@ -110,6 +115,7 @@ public class MAXSwerveModuleIO implements ModuleIO{
     m_turningClosedLoopController.setReference(correctedDesiredState.angle.getRadians(), ControlType.kPosition);
 
     m_desiredState = desiredState;
+    m_processedDesiredState = correctedDesiredState;
   }
 
   /** Zeroes all the SwerveModule encoders. */
@@ -123,5 +129,6 @@ public class MAXSwerveModuleIO implements ModuleIO{
     inputs.position = getPosition();
     inputs.state = getState();
     inputs.desiredState = getDesiredState();
+    inputs.processedDesiredState = getProcessedDesiredState();
   }
 }

@@ -24,6 +24,7 @@ public interface ModuleIO {
       public SwerveModulePosition position = new SwerveModulePosition();
       public SwerveModuleState state = new SwerveModuleState();
       public SwerveModuleState desiredState = new SwerveModuleState();
+      public SwerveModuleState processedDesiredState = new SwerveModuleState();
   }
 
   public default void updateInputs(ModuleIOInputs inputs) {}
